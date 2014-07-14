@@ -2,7 +2,6 @@
     <head>
         <title></title>
         <link rel="stylesheet" href="{{STATIC_URL}}css/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="{{STATIC_URL}}css/animate.css">
         <link rel="stylesheet" href="{{STATIC_URL}}css/xib.css" type="text/css" media="screen" title="no title" charset="utf-8">
         <script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.0.2.min.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}js/underscore-min.js"></script>
@@ -10,27 +9,28 @@
     </head>
 
     <body>
-        <div class="doc-xml">
-        
-            <span class="xib-node">
-                <span>&lt;</span>
-                <span class="xib-tag">worker</span>
-                <span class="xib-attr">id="1"</span>
-                <span class="xib-attr">type="abc"</span>
-                <span>&gt;</span>
-            </span>
-
-            <span class="xib-node-close">
-                <span>&lt;/</span>
-                <span class="xib-tag">worker</span>
-                <span>&gt;</span>
-            </span>
-        
+        <div class="search">
+            <input type="text" class="search-text" placeholder="Search"/>
+            <button class="search-btn">Search</button>
+        </div>
+        <div class="file-tree"></div>
+        <div class="display">
+            <div class="doc-xml"></div>
+            <div class="ctrl-bar">
+                <button class="full-edit-btn">Edit As Text</button>
+                <button class="full-edit-btn">Save</button>
+            </div>
         </div>
     </body>
 
     <script type="text/javascript">
         $(function() {
+            var winHeight = $(window).height();
+            var $docXml = $('.doc-xml');
+            var $ctrlBar = $('.ctrl-bar');
+            var $fileTree = $('.file-tree');
+            $docXml.outerHeight(winHeight-$docXml.offset().top-$ctrlBar.outerHeight());
+            $fileTree.outerHeight(winHeight-$docXml.offset().top);
             $.ajax({
                 url: '{% url get-xml-content %}',
                 success: function(result) {

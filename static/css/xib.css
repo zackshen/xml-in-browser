@@ -2,6 +2,13 @@
 body {
     font-family: 'Microsoft Yahei';
     font-size: 13px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.doc-xml {
+    padding: 20px;
+    overflow:scroll;
 }
 
 .xib-node {
@@ -9,16 +16,15 @@ body {
 }
 
 .xib-node.child {
-    padding-left: 30px;
+    margin-left: 30px;
 }
 
-.xib-node-children,
-.xib-node-close {
+.xib-node-children {
     display:block;
 }
 
 .xib-node-close {
-    padding-left:13px;
+    margin-left:13px;
 }
 
 .xib-node.inline > .xib-node-close,
@@ -28,7 +34,7 @@ body {
 }
 
 .xib-node.inline > .xib-node-close {
-    padding: 0px;
+    margin: 0px;
 }
 
 .xib-node.inline > .xib-node-toggle {
@@ -39,8 +45,33 @@ body {
     cursor:pointer;
 }
 
-.xib-node .xib-node-open .xib-n-name.highlight,
-.xib-node .xib-node-close .xib-n-name.highlight {
-    background-color: #ebebeb;
+.xib-node .xib-node-open.highlight,
+.xib-node .xib-node-close.highlight {
+    background-color: #ccc;
     color: #333;
+    border-radius: 13px;
+}
+
+.search {
+    padding:10px 20px 10px 20px;
+    background-color: #ebebeb;
+}
+
+.search-text {
+    width: 400px;
+}
+
+.ctrl-bar {
+    padding: 10px 20px 10px 20px;
+}
+
+.file-tree {
+    width: 300px;
+    float:left;
+    padding: 20px;
+}
+
+.display {
+    margin-left: 300px;
+    border-left: 1px dashed #333;
 }

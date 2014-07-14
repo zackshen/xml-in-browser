@@ -19,7 +19,7 @@ def get_xml_content(request):
     if hasattr(settings, 'PROJECT_PATH'):
         project_path = getattr(settings, 'PROJECT_PATH')
 
-    tmp_xml = os.path.join(project_path, 'exporter.xml')
+    tmp_xml = os.path.join(project_path, 'cd_catalog_with_css.xml')
     xml_content = ''
     with open(tmp_xml, 'r') as fp:
         xml_content = fp.read()

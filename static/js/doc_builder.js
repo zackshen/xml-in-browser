@@ -40,25 +40,25 @@
             var children = this._makeChildNodes(node);
 
             var tpl = '<span class="xib-node <%=child%> <%=inline%> expand">'
-                    + '    <span class="xib-node-toggle fa fa-caret-down"></span>'
-                    + '    <span class="xib-node-open">'
-                    + '        <span>&lt;</span>'
-                    + '        <span class="xib-n-name"><%=nodeName%></span>'
-                    + '        <% _.each(attributes, function(value, key) {%>'
-                    + '        <span class="xib-n-attr"><%=key%>="<%=value%>"</span>'
-                    + '        <% })%>'
-                    + '        <span>&gt;</span>'
-                    + '    </span>'
-                    + '    <span class="xib-node-children">'
-                    + '        <% _.each(children, function(child) { %>'
-                    + '            <%=child%>'
-                    + '        <% }) %>'
-                    + '    </span>'
-                    + '    <span class="xib-node-close">'
-                    + '        <span>&lt;/</span>'
-                    + '        <span class="xib-n-name"><%=nodeName%></span>'
-                    + '        <span>&gt;</span>'
-                    + '    </span>'
+                    + '<span class="xib-node-toggle fa fa-caret-down"></span>'
+                    + '<span class="xib-node-open">'
+                    + '<span>&lt;</span>'
+                    + '<span class="xib-n-name"><%=nodeName%></span>'
+                    + '<% _.each(attributes, function(value, key) {%>'
+                    + '<span class="xib-n-attr"><%=key%>="<%=value%>"</span>'
+                    + '<% })%>'
+                    + '<span>&gt;</span>'
+                    + '</span>'
+                    + '<span class="xib-node-children">'
+                    + '<% _.each(children, function(child) { %>'
+                    + '<%=child%>'
+                    + '<% }) %>'
+                    + '</span>'
+                    + '<span class="xib-node-close">'
+                    + '<span>&lt;/</span>'
+                    + '<span class="xib-n-name"><%=nodeName%></span>'
+                    + '<span>&gt;</span>'
+                    + '</span>'
                     + '</span>';
 
 
@@ -124,15 +124,23 @@
             this.$elem.delegate('.xib-node-open .xib-n-name', 'click', function() {
                 var node = $(this).parents('.xib-node').first();
                 _this.$elem.find('.highlight').removeClass('highlight');
-                node.find('> .xib-node-open .xib-n-name').addClass('highlight');
-                node.find('> .xib-node-close .xib-n-name').addClass('highlight');
+                node.find('> .xib-node-open').addClass('highlight');
+                node.find('> .xib-node-close').addClass('highlight');
             });
             this.$elem.delegate('.xib-node-close .xib-n-name', 'click', function() {
                 var node = $(this).parents('.xib-node').first();
                 _this.$elem.find('.highlight').removeClass('highlight');
-                node.find('> .xib-node-open .xib-n-name').addClass('highlight');
-                node.find('> .xib-node-close .xib-n-name').addClass('highlight');
+                node.find('> .xib-node-open').addClass('highlight');
+                node.find('> .xib-node-close').addClass('highlight');
             });
+
+            // this.$elem.delegate('.xib-node-open .xib-n-name', 'dblclick', function() {
+                // var node = $(this).parents('.xib-node').first();
+                // _this.$elem.find('.highlight').removeClass('highlight');
+                // node.find('> .xib-node-open').addClass('highlight');
+                // node.find('> .xib-node-close').addClass('highlight');
+                // node.find('> .xib-node-toggle').trigger('click');
+            // });
         },
 
         toHtml: function() {
