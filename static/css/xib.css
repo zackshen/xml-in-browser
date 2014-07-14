@@ -1,0 +1,46 @@
+
+body {
+    font-family: 'Microsoft Yahei';
+    font-size: 13px;
+}
+
+.xib-node {
+    display:block;
+}
+
+.xib-node.child {
+    padding-left: 30px;
+}
+
+.xib-node-children,
+.xib-node-close {
+    display:block;
+}
+
+.xib-node-close {
+    padding-left:13px;
+}
+
+.xib-node.inline > .xib-node-close,
+.xib-node.inline > .xib-node-children,
+.xib-node.inline > .xib-node-open {
+    display:inline;
+}
+
+.xib-node.inline > .xib-node-close {
+    padding: 0px;
+}
+
+.xib-node.inline > .xib-node-toggle {
+    display:none;
+}
+
+.xib-node .xib-node-toggle {
+    cursor:pointer;
+}
+
+.xib-node .xib-node-open .xib-n-name.highlight,
+.xib-node .xib-node-close .xib-n-name.highlight {
+    background-color: #ebebeb;
+    color: #333;
+}
