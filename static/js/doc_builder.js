@@ -23,21 +23,18 @@
             return attributes;
         },
 
-        _makeNode: function(node, isChild) {
-            /*
-             <span class="xib-node">
-                <span class="xib-toggle"></span>
-                <span class="xib-node-open"></span>
-                <span class="xib-node-children"></span>
-                <span class="xib-node-close"></span>
-             </span>
-             */
-            var nodeName = node.nodeName;
-            var childNodes = node.childNodes;
-            var attributes = this._getAttrDict(node);
-            var nodeValue = node.nodeValue || node.firstChild;
+        _makeTextNode: function(node) {
+            var tpl = '<span class="xib-node-value"><%=text%></span>';
+            var nodeValue = node.nodeValue.trim();
+            return _.template(tpl, {'text': nodeValue});
+        },
 
-            var children = this._makeChildNodes(node);
+        _makeElementNode: function(node, isChild) {
+            var nodeName   = node.nodeName,
+                childNodes = node.childNodes,
+                attributes = this._getAttrDict(node),
+                nodeValue  = node.nodeValue || node.firstChild;
+                children   = this._makeChildNodes(node);
 
             var tpl = '<span class="xib-node <%=child%> <%=inline%> expand">'
                     + '<span class="xib-node-toggle fa fa-caret-down"></span>'
@@ -61,7 +58,6 @@
                     + '</span>'
                     + '</span>';
 
-
             var html = _.template(tpl, {
                 'nodeName': nodeName,
                 'attributes': attributes,
@@ -73,10 +69,58 @@
             return html;
         },
 
-        _makeTextNode: function(node) {
-            var tpl = '<span class="xib-node-value"><%=text%></span>';
-            var nodeValue = node.nodeValue.trim();
-            return _.template(tpl, {'text': nodeValue});
+        _makeCDataNode: function(node, isChild) {
+            var nodeName   = node.nodeName,
+                childNodes = node.childNodes,
+                nodeValue  = node.nodeValue || node.firstChild,
+                cdata      = node.nodeValue.trim();
+
+            var tpl = '<span class="xib-node <%=child%> expand">'
+                    + '<span class="xib-node-toggle fa fa-caret-down"></span>'
+                    + '<span class="xib-node-open">'
+                    + '<span>&lt;![</span>'
+                    + '<span class="xib-n-name">CDATA</span>'
+                    + '<span>[</span>'
+                    + '</span>'
+                    + '<span class="xib-node-cdata"><%=cdata%></span>'
+                    + '<span class="xib-node-close">'
+                    + '<span>]]></span>'
+                    + '</span>'
+                    + '</span>';
+
+
+            var html = _.template(tpl, {
+                'nodeName': nodeName,
+                'child': isChild ? 'child': '',
+                'cdata': cdata
+            });
+
+            return html;
+        },
+
+        _makeCommentNode: function(node, isChild) {
+            var nodeName   = node.nodeName,
+                childNodes = node.childNodes,
+                nodeValue  = node.nodeValue || node.firstChild,
+                comment    = node.nodeValue;
+
+            var tpl = '<span class="xib-node <%=child%>">'
+                    + '<span class="xib-node-open">'
+                    + '<span>&lt;!--</span>'
+                    + '</span>'
+                    + '<span class="xib-comment"><%=comment%></span>'
+                    + '<span class="xib-node-close">'
+                    + '<span>--&gt;</span>'
+                    + '</span>'
+                    + '</span>';
+
+
+            var html = _.template(tpl, {
+                'child': isChild ? 'child': '',
+                'comment': comment
+            });
+
+            return html;
         },
 
         _makeChildNodes: function(node) {
@@ -89,14 +133,18 @@
 
                 for (var i=0,len=childCount; i < len; i++) {
                     var _node = childNodes[i];
+
                     if (_node.nodeType == _node.TEXT_NODE) {
                         html.push(this._makeTextNode(_node));
                     }
                     if (_node.nodeType == _node.COMMENT_NODE) {
-                        continue;
+                        html.push(this._makeCommentNode(_node, true));
+                    }
+                    if (_node.nodeType == _node.CDATA_SECTION_NODE) {
+                        html.push(this._makeCDataNode(_node, true));
                     }
                     if (_node.nodeType == _node.ELEMENT_NODE) {
-                        html.push(this._makeNode(_node, true));
+                        html.push(this._makeElementNode(_node, true));
                     }
                 }
             }
@@ -133,18 +181,10 @@
                 node.find('> .xib-node-open').addClass('highlight');
                 node.find('> .xib-node-close').addClass('highlight');
             });
-
-            // this.$elem.delegate('.xib-node-open .xib-n-name', 'dblclick', function() {
-                // var node = $(this).parents('.xib-node').first();
-                // _this.$elem.find('.highlight').removeClass('highlight');
-                // node.find('> .xib-node-open').addClass('highlight');
-                // node.find('> .xib-node-close').addClass('highlight');
-                // node.find('> .xib-node-toggle').trigger('click');
-            // });
         },
 
         toHtml: function() {
-            var html = this._makeNode(this.doc.documentElement);
+            var html = this._makeElementNode(this.doc.documentElement);
             this.$elem = $('<div class="xml-wrapper"></div>');
             this.$elem.append($(html));
             this._bindEvents();

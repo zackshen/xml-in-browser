@@ -2,6 +2,13 @@
 <!-- Edited by XMLSpy -->
 <?xml-stylesheet type="text/css" href="cd_catalog.css"?>
 <CATALOG>
+    <!--
+         cd list
+         author: u2
+    -->
+    <![CDATA[
+    hello
+    ]]>
 	<CD>
 		<TITLE>Empire Burlesque</TITLE>
 		<ARTIST>Bob Dylan</ARTIST>
