@@ -22,22 +22,14 @@
     <script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.0.2.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/underscore-min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/doc_builder.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/xib.js"></script>
     <script type="text/javascript">
         $(function() {
-            var winHeight = $(window).height();
-            var $docXml = $('.doc-xml');
-            var $ctrlBar = $('.ctrl-bar');
-            var $fileTree = $('.file-tree');
-            $docXml.outerHeight(winHeight-$docXml.offset().top-$ctrlBar.outerHeight());
-            $fileTree.outerHeight(winHeight-$docXml.offset().top);
-            $.ajax({
-                url: '{% url get-xml-content %}',
-                success: function(result) {
-                    var docBuilder = new DocBuilder($('.doc-xml'));
-                    var html = docBuilder.buildHtml(result);
-                    $('.doc-xml').empty().html(html);
-                }
-            });
+            var options = {
+                url: '{% url get-xml-content %}'
+            };
+            var xib = new XibInterface($(document), options);
+            xib.load();
         });
     </script>
 </html>
