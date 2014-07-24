@@ -19,7 +19,7 @@
                     + '<span>&lt;</span>'
                     + '<span class="xib-n-name"><%=nodeName%></span>'
                     + '<% _.each(attributes, function(value, key) {%>'
-                    + '<span class="xib-n-attr"><%=key%>="<%=value%>"</span>'
+                    + '<span class="xib-n-attr" key=<%=key%> value=<%=value%>><%=key%>="<%=value%>"</span>'
                     + '<% })%>'
                     + '<span>&gt;</span>'
                     + '</span>'
@@ -45,7 +45,24 @@
                 'child': this._opts.isChild ? 'child': '',
                 'inline': childHtml.length > 1 ? '' : 'inline'
             });
+            this.$elem = $(html);
             return html;
+        },
+
+        search: function(text) {
+            for(var key in this._attributes) {
+                var value = this._attributes[key]+"";
+                if (value.indexOf(text) >= 0) {
+                    this.$elem.find('.xib-n-attr[value="'+value+'"]').addClass('search-focus');
+                }
+                if (key.indexOf(text) >= 0) {
+                    this.$elem.find('.xib-n-attr[key="'+key+'"]').addClass('search-focus');
+                }
+            }
+
+            for(var i in this._children) {
+                this._children[i].search(text);
+            }
         }
     };
 
@@ -57,6 +74,10 @@
         html: function() {
             var tpl = '<span class="xib-node-value"><%=text%></span>';
             return _.template(tpl, {'text': this._text});
+        },
+
+        search:function(text) {
+
         }
     };
 
@@ -82,6 +103,9 @@
                 'comment': this._comment
             });
             return html;
+        },
+        search:function(text) {
+
         }
     }
 
@@ -111,6 +135,9 @@
                 'cdata': this._cdata
             });
             return html;
+        },
+        search:function(text) {
+
         }
     };
 
@@ -220,25 +247,32 @@
 
         toHtml: function() {
             var rootNode = this._makeElementNode(this.doc.documentElement);
+            this.rootNode = rootNode;
             this.$elem = $('<div class="xml-wrapper"></div>');
             this.$elem.append($(rootNode.html()));
             this._bindEvents();
             return this.$elem;
         },
 
+        search: function(text) {
+            this.rootNode.search(text);
+        }
 
     };
 
-    var DocBuilder = function(buildContainer) {
-        this.buildContainer = buildContainer;
+    var DocBuilder = function() {
     };
 
     DocBuilder.prototype = {
 
         buildHtml: function(xmlDoc) {
-            var xibXml = new XibXml(xmlDoc);
-            return xibXml.toHtml();
+            this.doc = new XibXml(xmlDoc);
+            return this.doc;
         },
+
+        search: function(text) {
+            this.doc.search(text);
+        }
 
     };
 

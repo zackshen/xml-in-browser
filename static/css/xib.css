@@ -75,3 +75,8 @@ body {
     margin-left: 300px;
     border-left: 1px dashed #333;
 }
+
+/*************** search ****************/
+.xib-n-attr.search-focus {
+    color:red;
+}

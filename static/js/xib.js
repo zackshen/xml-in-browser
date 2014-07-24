@@ -5,6 +5,7 @@
         this.$fileTree = elem.find('.file-tree');
         this.$docXml = elem.find('.doc-xml');
         this.$ctrlBar = elem.find('.ctrl-bar');
+        this.$searchBtn = elem.find('.search .search-btn');
         this._opts = opts;
 
         this._init();
@@ -18,7 +19,7 @@
         },
 
         _bindEvents: function() {
-
+            this.$searchBtn.bind('click', $.proxy(this._startSearch, this));
         },
 
         _setCss: function() {
@@ -29,14 +30,23 @@
             this.$fileTree.outerHeight(winHeight-docXmlOffset.top);
         },
 
+        _startSearch: function() {
+            var searchText = this.$elem.find('.search .search-text').val().trim();
+            if (searchText.length == 0) {
+                return;
+            }
+            this.xmlTree.search(searchText);
+        },
+
         load: function() {
             var _this = this;
             $.ajax({
                 url: _this._opts['url'],
                 success: function(result) {
-                    var docBuilder = new DocBuilder(_this.$docXml);
-                    var html = docBuilder.buildHtml(result);
-                    _this.$docXml.empty().html(html);
+                    var docBuilder = new DocBuilder();
+                    var xmlTree = docBuilder.buildHtml(result);
+                    _this.xmlTree = xmlTree;
+                    _this.$docXml.empty().html(xmlTree.toHtml());
                 }
             });
         }
