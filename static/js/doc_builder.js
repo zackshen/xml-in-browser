@@ -250,15 +250,15 @@
 
             this.$elem.delegate('.xib-node-open .xib-n-name', 'click', function() {
                 var node = $(this).parents('.xib-node').first();
-                _this.$elem.find('.highlight').removeClass('highlight');
-                node.find('> .xib-node-open').addClass('highlight');
-                node.find('> .xib-node-close').addClass('highlight');
+                _this.$elem.find('.selected').removeClass('selected');
+                node.find('> .xib-node-open').addClass('selected');
+                node.find('> .xib-node-close').addClass('selected');
             });
             this.$elem.delegate('.xib-node-close .xib-n-name', 'click', function() {
                 var node = $(this).parents('.xib-node').first();
-                _this.$elem.find('.highlight').removeClass('highlight');
-                node.find('> .xib-node-open').addClass('highlight');
-                node.find('> .xib-node-close').addClass('highlight');
+                _this.$elem.find('.selected').removeClass('selected');
+                node.find('> .xib-node-open').addClass('selected');
+                node.find('> .xib-node-close').addClass('selected');
             });
         },
 

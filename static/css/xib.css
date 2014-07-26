@@ -45,8 +45,8 @@ body {
     cursor:pointer;
 }
 
-.xib-node .xib-node-open.highlight,
-.xib-node .xib-node-close.highlight {
+.xib-node .xib-node-open.selected,
+.xib-node .xib-node-close.selected {
     background-color: #ccc;
     color: #333;
     border-radius: 13px;

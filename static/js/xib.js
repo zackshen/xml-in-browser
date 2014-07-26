@@ -43,6 +43,7 @@
         _clearSearch: function() {
             this.$elem.find('.search .search-text').val('');
             this.$elem.find('.search-focus').removeClass('search-focus');
+            this.$elem.find('.selected').removeClass('selected');
         },
 
         load: function() {
