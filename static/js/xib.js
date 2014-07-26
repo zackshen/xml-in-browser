@@ -6,6 +6,7 @@
         this.$docXml = elem.find('.doc-xml');
         this.$ctrlBar = elem.find('.ctrl-bar');
         this.$searchBtn = elem.find('.search .search-btn');
+        this.$clearSearchBtn = elem.find('.search .clear-search-btn');
         this._opts = opts;
 
         this._init();
@@ -20,6 +21,7 @@
 
         _bindEvents: function() {
             this.$searchBtn.bind('click', $.proxy(this._startSearch, this));
+            this.$clearSearchBtn.bind('click', $.proxy(this._clearSearch, this));
         },
 
         _setCss: function() {
@@ -36,6 +38,11 @@
                 return;
             }
             this.xmlTree.search(searchText);
+        },
+
+        _clearSearch: function() {
+            this.$elem.find('.search .search-text').val('');
+            this.$elem.find('.search-focus').removeClass('search-focus');
         },
 
         load: function() {

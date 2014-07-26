@@ -8,35 +8,35 @@
         this._nodeName = nodeName;
         this._attributes = attributes;
         this._children = children;
-        this._opts = opts||{};
+        this._opts = $.extend(true, {}, opts)||{};
     };
 
     ElementNode.prototype = {
-        html: function() {
+        elem: function() {
             var tpl = '<span class="xib-node <%=child%> <%=inline%> expand">'
                     + '<span class="xib-node-toggle fa fa-caret-down"></span>'
                     + '<span class="xib-node-open">'
                     + '<span>&lt;</span>'
-                    + '<span class="xib-n-name"><%=nodeName%></span>'
+                    + '<span class="xib-n-name" name="<%=nodeName%>"><%=nodeName%></span>'
                     + '<% _.each(attributes, function(value, key) {%>'
                     + '<span class="xib-n-attr" key=<%=key%> value=<%=value%>><%=key%>="<%=value%>"</span>'
                     + '<% })%>'
                     + '<span>&gt;</span>'
                     + '</span>'
                     + '<span class="xib-node-children">'
-                    + '<% _.each(children, function(child) { %>'
-                    + '<%=child%>'
-                    + '<% }) %>'
                     + '</span>'
                     + '<span class="xib-node-close">'
                     + '<span>&lt;/</span>'
-                    + '<span class="xib-n-name"><%=nodeName%></span>'
+                    + '<span class="xib-n-name" name="<%=nodeName%>"><%=nodeName%></span>'
                     + '<span>&gt;</span>'
                     + '</span>'
                     + '</span>';
-            var childHtml = _.map(this._children, function(child) {
-                return child.html();
-            })||[];
+
+            var childHtml = _.filter(_.map(this._children, function(child) {
+                return child.elem();
+            }), function(elem) {
+                return elem.html().length > 0;
+            });
 
             var html = _.template(tpl, {
                 'nodeName': this._nodeName,
@@ -46,20 +46,34 @@
                 'inline': childHtml.length > 1 ? '' : 'inline'
             });
             this.$elem = $(html);
-            return html;
+
+            var childElem = this.$elem.find('.xib-node-children');
+            for (var i in childHtml) {
+                childElem.append(childHtml[i]);
+            }
+            return this.$elem;
         },
 
         search: function(text) {
+            // check attributes
+            text = text.toLowerCase();
             for(var key in this._attributes) {
                 var value = this._attributes[key]+"";
-                if (value.indexOf(text) >= 0) {
+                if (value.toLowerCase().indexOf(text) >= 0) {
                     this.$elem.find('.xib-n-attr[value="'+value+'"]').addClass('search-focus');
                 }
-                if (key.indexOf(text) >= 0) {
+                if (key.toLowerCase().indexOf(text) >= 0) {
                     this.$elem.find('.xib-n-attr[key="'+key+'"]').addClass('search-focus');
                 }
             }
 
+            // check nodeName
+            if (this._nodeName.toLowerCase().indexOf(text) >= 0) {
+                this.$elem.find('.xib-node-open  .xib-n-name[name='+this._nodeName+']').addClass('search-focus');
+                this.$elem.find('.xib-node-close .xib-n-name[name='+this._nodeName+']').addClass('search-focus');
+            }
+
+            // check children nodes
             for(var i in this._children) {
                 this._children[i].search(text);
             }
@@ -71,9 +85,10 @@
     };
 
     TextNode.prototype = {
-        html: function() {
+        elem: function() {
             var tpl = '<span class="xib-node-value"><%=text%></span>';
-            return _.template(tpl, {'text': this._text});
+            this.$elem = $(_.template(tpl, {'text': this._text}));
+            return this.$elem;
         },
 
         search:function(text) {
@@ -87,7 +102,7 @@
     };
 
     CommentNode.prototype = {
-        html: function() {
+        elem: function() {
             var tpl = '<span class="xib-node <%=child%>">'
                     + '<span class="xib-node-open">'
                     + '<span>&lt;!--</span>'
@@ -102,7 +117,8 @@
                 'child': this._opts.isChild ? 'child': '',
                 'comment': this._comment
             });
-            return html;
+            this.$elem = $(html);
+            return this.$elem;
         },
         search:function(text) {
 
@@ -115,7 +131,7 @@
     };
 
     CDataNode.prototype = {
-        html: function() {
+        elem: function() {
             var tpl = '<span class="xib-node <%=child%> expand">'
                     + '<span class="xib-node-toggle fa fa-caret-down"></span>'
                     + '<span class="xib-node-open">'
@@ -134,7 +150,8 @@
                 'child': this._opts.isChild ? 'child': '',
                 'cdata': this._cdata
             });
-            return html;
+            this.$elem = $(html);
+            return this.$elem;
         },
         search:function(text) {
 
@@ -249,7 +266,7 @@
             var rootNode = this._makeElementNode(this.doc.documentElement);
             this.rootNode = rootNode;
             this.$elem = $('<div class="xml-wrapper"></div>');
-            this.$elem.append($(rootNode.html()));
+            this.$elem.append(rootNode.elem());
             this._bindEvents();
             return this.$elem;
         },
