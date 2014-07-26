@@ -1,7 +1,7 @@
 import os
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.conf import settings
 
 

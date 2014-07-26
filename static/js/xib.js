@@ -47,13 +47,24 @@
 
         load: function() {
             var _this = this;
+            var drawXml = function(result) {
+                var docBuilder = new DocBuilder();
+                var xmlTree = docBuilder.buildHtml(result);
+                _this.xmlTree = xmlTree;
+                _this.$docXml.empty().html(xmlTree.toHtml());
+            };
             $.ajax({
                 url: _this._opts['url'],
                 success: function(result) {
-                    var docBuilder = new DocBuilder();
-                    var xmlTree = docBuilder.buildHtml(result);
-                    _this.xmlTree = xmlTree;
-                    _this.$docXml.empty().html(xmlTree.toHtml());
+                    drawXml(result);
+                },
+                error: function() {
+                    var doc = document.implementation.createDocument(null, "info", null);
+                    var elem = doc.createElement('fail');
+                    var txt = doc.createTextNode("get remote xml fail");
+                    elem.appendChild(txt);
+                    doc.documentElement.appendChild(elem);
+                    drawXml(doc);
                 }
             });
         }
