@@ -1,8 +1,83 @@
 (function($, _, root) {
-
-    var XibXml = function(doc) {
-        this.doc = doc;
+    /*================================= Edit ================================*/
+    var EditInput = function($target, targetType) {
+        this.$target = $target;
+        this._node = this._getNode($target, targetType);
+        this._targetType = targetType;
+        this._init();
+        this._bindEvents();
     };
+    EditInput.prototype = {
+        _init: function() {
+            var targetType = this._targetType;
+            if (targetType === 'name') {
+                this._oldVal = this.$target.attr('name');
+            } else if (targetType === 'key') {
+                this._oldVal = this.$target.attr('key');
+            } else if (targetType === 'value') {
+                this._oldVal = this.$target.attr('value');
+            } else if (targetType === 'content') {
+                this._oldVal = this.$target.text();
+            }
+            this.$editBox = $('<input type="text" value="'+this._oldVal+'"/>');
+            this.$target.after(this.$editBox);
+        },
+        _bindEvents: function() {
+            var _this = this;
+            var updateNode = function(val) {
+                var newVal = val.trim(),
+                targetType = _this._targetType;
+                if (newVal.length == 0) {
+                    return false;
+                }
+                if (newVal != this._oldVal) {
+                    var info = {};
+                    if (targetType === 'name') {
+                        info['oldValue'] = _this.$target.attr('name');
+                        info['newValue'] = newVal;
+                    } else if (targetType === 'key') {
+                        info['oldValue'] = _this._oldVal;
+                        info['newValue'] = newVal;
+                    } else if (targetType === 'value') {
+                        info['newValue'] = newVal;
+                        info['key'] = _this.$target.attr('key');
+                    } else if (targetType === 'content') {
+                        info['newValue'] = newVal;
+                    }
+                    _this._node.updateNode(_this._targetType, info);
+                }
+                _this.$editBox.remove();
+                _this.$target.show();
+            };
+            this.$editBox.bind('keyup',  function(e) {
+                if (e.keyCode === 13) {
+                    updateNode($(this).val());
+                }
+            })
+            this.$editBox.bind('blur',  function(e) {
+                var val = $(this).val().trim();
+                if (val.length == 0) {
+                    return false;
+                }
+                updateNode(val);
+            })
+
+        },
+        _getNode: function($target, targetType) {
+            if (_.contains(['name', 'key', 'value'], targetType)) {
+                return $target.parents('.xib-node').data('node');
+            } else {
+                return $target.data('node');
+            }
+        },
+        show: function() {
+            this.$editBox.show();
+            this.$target.hide();
+            this.$editBox.focus().select();
+        }
+    };
+
+    /*================================= Nodes ===============================*/
 
     var ElementNode = function(nodeName, attributes, children, opts) {
         this._nodeName = nodeName;
@@ -19,7 +94,10 @@
                     + '<span>&lt;</span>'
                     + '<span class="xib-n-name" name="<%=nodeName%>"><%=nodeName%></span>'
                     + '<% _.each(attributes, function(value, key) {%>'
-                    + '<span class="xib-n-attr" key=<%=key%> value=<%=value%>><%=key%>="<%=value%>"</span>'
+                    + '<span class="xib-n-attr" key=<%=key%> value=<%=value%>>'
+                    + '<span class="xib-n-attr-key" key="<%=key%>"><%=key%></span>='
+                    + '<span class="xib-n-attr-val" key="<%=key%>" value="<%=value%>"><%=value%></span>'
+                    + '</span>'
                     + '<% })%>'
                     + '<span>&gt;</span>'
                     + '</span>'
@@ -51,6 +129,7 @@
             for (var i in childHtml) {
                 childElem.append(childHtml[i]);
             }
+            this.$elem.data('node', this);
             return this.$elem;
         },
 
@@ -77,6 +156,28 @@
             for(var i in this._children) {
                 this._children[i].search(text);
             }
+        },
+
+        updateNode: function(type, info) {
+            if (type === 'name') {
+                var oldName = info.oldValue;
+                var newName = info.newValue;
+                this._nodeName = newName;
+                this.$elem.find('.xib-n-name[name="'+oldName+'"]').attr('name', newName).text(newName);
+            } else if (type === 'key') {
+                var oldKey = info.oldValue;
+                var newKey = info.newValue;
+                if (oldKey in this._attributes) {
+                    this._attributes[newKey] = this._attributes[oldKey];
+                    delete this._attributes[oldKey];
+                    this.$elem.find('.xib-n-attr-key[key="'+oldKey+'"]').attr('key', newKey).text(newKey);
+                }
+            } else if (type === 'value') {
+                var newValue = info.newValue;
+                var key = info.key;
+                this._attributes[key] = newValue;
+                this.$elem.find('.xib-n-attr-val[key="'+key+'"]').attr('value', newValue).text(newValue);
+            }
         }
     };
 
@@ -88,11 +189,21 @@
         elem: function() {
             var tpl = '<span class="xib-node-value"><%=text%></span>';
             this.$elem = $(_.template(tpl, {'text': this._text}));
+            this.$elem.data('node', this);
             return this.$elem;
         },
 
         search:function(text) {
+            text = text.toLowerCase();
+            if (this._text.toLowerCase().indexOf(text) >= 0) {
+                this.$elem.addClass('search-focus');
+            }
+        },
 
+        updateNode: function(type, info) {
+            var newVal = info.newValue;
+            this._text = newVal;
+            this.$elem.text(newVal);
         }
     };
 
@@ -118,6 +229,7 @@
                 'comment': this._comment
             });
             this.$elem = $(html);
+            this.$elem.data('node', this);
             return this.$elem;
         },
         search:function(text) {
@@ -151,11 +263,18 @@
                 'cdata': this._cdata
             });
             this.$elem = $(html);
+            this.$elem.data('node', this);
             return this.$elem;
         },
         search:function(text) {
 
         }
+    };
+
+    /*================================= XibXml ==============================*/
+
+    var XibXml = function(doc) {
+        this.doc = doc;
     };
 
     XibXml.prototype = {
@@ -260,6 +379,31 @@
                 node.find('> .xib-node-open').addClass('selected');
                 node.find('> .xib-node-close').addClass('selected');
             });
+
+            this.$elem.delegate('.xib-node-open .xib-n-name', 'dblclick', function() {
+                var elem = $(this);
+                var input = new EditInput(elem, 'name');
+                input.show();
+            });
+
+            this.$elem.delegate('.xib-node-open .xib-n-attr-key', 'dblclick', function() {
+                var elem = $(this);
+                var input = new EditInput(elem, 'key');
+                input.show();
+            });
+
+            this.$elem.delegate('.xib-node-open .xib-n-attr-val', 'dblclick', function() {
+                var elem = $(this);
+                var input = new EditInput(elem, 'value');
+                input.show();
+            });
+
+            this.$elem.delegate('.xib-node-value', 'dblclick', function() {
+                var elem = $(this);
+                var input = new EditInput(elem, 'content');
+                input.show();
+            });
+
         },
 
         toHtml: function() {
@@ -276,6 +420,8 @@
         }
 
     };
+
+    /*================================= DobBuilder ==============================*/
 
     var DocBuilder = function() {
     };

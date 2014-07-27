@@ -78,6 +78,7 @@ body {
 
 /*************** search ****************/
 .xib-n-name.search-focus,
-.xib-n-attr.search-focus {
+.xib-n-attr.search-focus,
+.xib-node-value.search-focus {
     color:red;
 }

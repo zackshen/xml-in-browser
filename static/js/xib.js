@@ -37,6 +37,7 @@
             if (searchText.length == 0) {
                 return;
             }
+            this._clearSearch();
             this.xmlTree.search(searchText);
         },
 
