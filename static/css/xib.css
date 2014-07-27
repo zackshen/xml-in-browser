@@ -68,11 +68,11 @@ body {
 .file-tree {
     width: 300px;
     float:left;
-    padding: 20px;
+    padding: 20px 0px 20px 0px;
 }
 
 .display {
-    margin-left: 340px;
+    margin-left: 300px;
     border-left: 1px dashed #333;
 }
 

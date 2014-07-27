@@ -2,6 +2,7 @@
     <head>
         <title></title>
         <link rel="stylesheet" href="{{STATIC_URL}}css/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{STATIC_URL}}css/jstree/jstree.min.css">
         <link rel="stylesheet" href="{{STATIC_URL}}css/xib.css" type="text/css" media="screen" title="no title" charset="utf-8">
     </head>
     <body>
@@ -20,12 +21,16 @@
     </body>
     <script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.0.2.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/underscore-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/EventEmitter.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jstree.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/filetree.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/doc_builder.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/xib.js"></script>
     <script type="text/javascript">
         $(function() {
             var options = {
-                url: '{% url get-xml-content %}'
+                treeUrl: '{% url get-folder-tree %}',
+                contentUrl: '{% url get-xml-content %}'
             };
             var xib = new XibInterface($(document), options);
             xib.load();

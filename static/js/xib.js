@@ -1,5 +1,7 @@
 (function(root, $, _) {
 
+    var FileTree = root.FileTree;
+
     var XibInterface = function(elem, opts) {
         this.$elem = elem;
         this.$fileTree = elem.find('.file-tree');
@@ -47,7 +49,7 @@
             this.$elem.find('.selected').removeClass('selected');
         },
 
-        load: function() {
+        _loadXml: function(path) {
             var _this = this;
             var drawXml = function(result) {
                 var docBuilder = new DocBuilder();
@@ -56,7 +58,10 @@
                 _this.$docXml.empty().html(xmlTree.toHtml());
             };
             $.ajax({
-                url: _this._opts['url'],
+                url: _this._opts['contentUrl'],
+                type: 'POST',
+                dataType: 'xml',
+                data: {'path': path},
                 success: function(result) {
                     drawXml(result);
                 },
@@ -69,6 +74,14 @@
                     drawXml(doc);
                 }
             });
+        },
+
+        load: function() {
+            this.tree = new FileTree(this.$fileTree, this._opts);
+            this.tree.addListener('node.selected', $.proxy(this._loadXml, this));
+            this.tree.load();
+
+            return;
         }
     };
 
