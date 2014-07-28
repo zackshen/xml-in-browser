@@ -16,6 +16,16 @@
             });
         },
 
+        getSelectFile: function() {
+            var node = this.tree.get_node(this.tree.get_selected())
+            if (node) {
+                if (node.original.type === 'file') {
+                    return node.original.path;
+                }
+            }
+            return '';
+        },
+
         _makeTree: function(paths) {
             var _this = this;
             this.$elem.jstree(
@@ -39,6 +49,8 @@
                     _this.emitEvent('node.selected', [data.path]);
                 }
             });
+
+            this.tree = this.$elem.jstree();
         }
     }
 

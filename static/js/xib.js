@@ -8,6 +8,7 @@
         this.$docXml = elem.find('.doc-xml');
         this.$ctrlBar = elem.find('.ctrl-bar');
         this.$searchBtn = elem.find('.search .search-btn');
+        this.$saveBtn = elem.find('.save-btn');
         this.$clearSearchBtn = elem.find('.search .clear-search-btn');
         this._opts = opts;
 
@@ -24,6 +25,7 @@
         _bindEvents: function() {
             this.$searchBtn.bind('click', $.proxy(this._startSearch, this));
             this.$clearSearchBtn.bind('click', $.proxy(this._clearSearch, this));
+            this.$saveBtn.bind('click', $.proxy(this._saveXml, this));
         },
 
         _setCss: function() {
@@ -49,6 +51,27 @@
             this.$elem.find('.selected').removeClass('selected');
         },
 
+        _saveXml: function() {
+            var file = this.tree.getSelectFile();
+            if (file) {
+                console.log(file);
+                var xmlContent = this.xmlTree.getContent();
+
+                $.ajax({
+                    url: this._opts.saveXmlUrl,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {'xml': xmlContent, 'file': file},
+                    success: function(result) {
+
+                    },
+                    error: function(err) {
+
+                    }
+                });
+            }
+        },
+
         _loadXml: function(path) {
             var _this = this;
             var drawXml = function(result) {
@@ -58,7 +81,7 @@
                 _this.$docXml.empty().html(xmlTree.toHtml());
             };
             $.ajax({
-                url: _this._opts['contentUrl'],
+                url: _this._opts.contentUrl,
                 type: 'POST',
                 dataType: 'xml',
                 data: {'path': path},
