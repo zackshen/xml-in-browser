@@ -133,6 +133,32 @@
             return this.$elem;
         },
 
+        getContent: function(parentElem, docEl, root) {
+            var el = docEl.createElement(this._nodeName);
+            for (var key in this._attributes) {
+                el.setAttribute(key, this._attributes[key]);
+            }
+
+            for (var i in this._children) {
+                el.appendChild(this._children[i].getContent(el, docEl));
+            }
+
+            if (root) {
+                root.appendChild(el);
+                return root;
+            } else {
+                return el;
+            }
+        },
+
+        nodeName: function() {
+            return this._nodeName;
+        },
+
+        attributes: function() {
+            return this._attributes;
+        },
+
         search: function(text) {
             // check attributes
             text = text.toLowerCase();
@@ -200,6 +226,11 @@
             }
         },
 
+        getContent: function(parentElem, docEl) {
+            var el = docEl.createTextNode(this._text);
+            return el;
+        },
+
         updateNode: function(type, info) {
             var newVal = info.newValue;
             this._text = newVal;
@@ -234,7 +265,11 @@
         },
         search:function(text) {
 
-        }
+        },
+        getContent: function(parentElem, docEl) {
+            var el = docEl.createComment(this._comment);
+            return el;
+        },
     }
 
     var CDataNode = function(cdata, opts) {
@@ -268,7 +303,11 @@
         },
         search:function(text) {
 
-        }
+        },
+        getContent: function(parentElem, docEl) {
+            var el = docEl.createCDATASection(this._cdata);
+            return el;
+        },
     };
 
     /*================================= XibXml ==============================*/
@@ -409,6 +448,7 @@
         toHtml: function() {
             var rootNode = this._makeElementNode(this.doc.documentElement);
             this.rootNode = rootNode;
+            this.rootNode.isRoot = true;
             this.$elem = $('<div class="xml-wrapper"></div>');
             this.$elem.append(rootNode.elem());
             this._bindEvents();
@@ -417,8 +457,14 @@
 
         search: function(text) {
             this.rootNode.search(text);
-        }
+        },
 
+        getContent: function() {
+            var doc = document.implementation.createDocument(null, null, null);
+            var el = this.rootNode.getContent(null, doc, doc.documentElement);
+            var ser = new XMLSerializer();
+            return ser.serializeToString(el);
+        }
     };
 
     /*================================= DobBuilder ==============================*/
@@ -431,6 +477,10 @@
         buildHtml: function(xmlDoc) {
             this.doc = new XibXml(xmlDoc);
             return this.doc;
+        },
+
+        getContent: function() {
+            return this.doc.getContent();
         },
 
         search: function(text) {

@@ -15,7 +15,7 @@
         <div class="display">
             <div class="doc-xml"></div>
             <div class="ctrl-bar">
-                <button class="full-edit-btn">Save</button>
+                <button class="save-btn">Save</button>
             </div>
         </div>
     </body>
@@ -30,7 +30,8 @@
         $(function() {
             var options = {
                 treeUrl: '{% url get-folder-tree %}',
-                contentUrl: '{% url get-xml-content %}'
+                contentUrl: '{% url get-xml-content %}',
+                saveXmlUrl: '{% url save-xml %}'
             };
             var xib = new XibInterface($(document), options);
             xib.load();

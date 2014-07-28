@@ -1,18 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Edited by XMLSpy -->
-<?xml-stylesheet type="text/css" href="cd_catalog.css"?>
-<CATALOG>
-
-    <!--
+<?xml version="1.0" encoding="utf-8"?>
+<SONY>
+	<!--
          cd list
          author: u2
     -->
-    <![CDATA[
-    hello
-    ]]>
-    <info version="1.0">
-        <auth>zack</auth>
-    </info>
+<![CDATA[hello]]>	<info version="1.0">
+		<auth>zack</auth>
+	</info>
 	<CD>
 		<TITLE>Empire Burlesque</TITLE>
 		<ARTIST>Bob Dylan</ARTIST>
@@ -221,4 +215,4 @@
 		<PRICE>8.20</PRICE>
 		<YEAR>1987</YEAR>
 	</CD>
-</CATALOG>
+</SONY>
